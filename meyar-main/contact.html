@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>طلب تقرير | معيار</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="overlay" id="overlay"></div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="brand"><span class="dot"></span>معيار</a>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="index.html">اللوحة الرئيسية</a></li>
+        <li><a href="services.html">مؤشرات الجودة</a></li>
+        <li><a href="contact.html">طلب تقرير</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <button class="contrast-toggle" aria-pressed="false">تباين عالٍ <span class="knob"></span></button>
+      <button class="nav-toggle" aria-label="فتح القائمة"><span></span></button>
+    </div>
+  </div>
+</header>
+
+<section class="page-header">
+  <div class="wrap">
+    <span class="eyebrow">طلب تقرير</span>
+    <h1>اطلب تقرير مؤشرات مخصصًا لكليتك</h1>
+    <p>حدّد نوع التقرير المطلوب وسيصلك عبر البريد خلال 3 أيام عمل.</p>
+  </div>
+</section>
+
+<div class="wrap contact-grid">
+  <div class="info-card">
+    <h3>بيانات التواصل</h3>
+    <div class="info-row">📍 مدينة نصر — القاهرة</div>
+    <div class="info-row">✉️ reports@meyar-dashboard.example</div>
+    <div class="info-row">📞 +20 1097870350</div>
+    <div class="info-row">🕐 الأحد–الخميس، 9 صباحًا – 5 عصرًا</div>
+  </div>
+
+  <div>
+    <div id="formStatus" class="form-status"></div>
+    <form id="contactForm" novalidate>
+      <div class="form-field">
+        <label for="fullName">الاسم بالكامل</label>
+        <input type="text" id="fullName" name="fullName">
+      </div>
+      <div class="form-field">
+        <label for="email">البريد الإلكتروني</label>
+        <input type="text" id="email" name="email">
+      </div>
+      <div class="form-field">
+        <label for="college">الكلية / القسم</label>
+        <input type="text" id="college" name="college">
+      </div>
+      <div class="form-field">
+        <label for="reportType">نوع التقرير</label>
+        <select id="reportType" name="reportType">
+          <option value="academic">مؤشرات الجودة الأكاديمية</option>
+          <option value="graduates">مؤشرات جودة الخريجين</option>
+          <option value="full">تقرير شامل</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="message">ملاحظات إضافية</label>
+        <textarea id="message" name="message"></textarea>
+      </div>
+      <button type="submit" class="btn btn-teal">إرسال الطلب</button>
+    </form>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <h5>معيار</h5>
+      <p>لوحة مؤشرات موحّدة لجودة التعليم العالي وتتبّع جودة الخريجين.</p>
+      <div class="social-row">
+        <a href="#" aria-label="لينكدإن">in</a>
+        <a href="#" aria-label="إكس">x</a>
+        <a href="#" aria-label="يوتيوب">▶</a>
+      </div>
+    </div>
+    <div>
+      <h5>روابط</h5>
+      <ul>
+        <li><a href="index.html">اللوحة الرئيسية</a></li>
+        <li><a href="services.html">مؤشرات الجودة</a></li>
+        <li><a href="contact.html">طلب تقرير</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>تواصل</h5>
+      <ul>
+        <li>reports@meyar-dashboard.example</li>
+        <li>+20 1097870350</li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">آخر تحديث للبيانات: <span id="lastUpdate">15 يوليو 2026</span></div>
+</footer>
+
+<script src="js/script.js"></script>
+</body>
+</html>
