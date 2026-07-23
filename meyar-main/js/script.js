@@ -47,13 +47,14 @@ function initNavToggle() {
 
   // INTERN-TASK #6: إغلاق القائمة عند الضغط على الخلفية المعتمة
   // overlay غير موجود حاليًا — أضف مستمع click هنا يغلق nav و overlay معًا.
-
-if (overlay) {
-  overlay.addEventListener('click', () => {
-    nav.classList.remove('open');
-    overlay.classList.remove('show');
-  });
+  if (overlay) {
+    overlay.addEventListener('click', () => {
+      nav.classList.remove('open');
+      overlay.classList.remove('show');
+    });
+  }
 }
+
 /* INTERN-TASK #3: مفتاح التباين العالي في الهيدر */
 function initContrastToggle() {
   const toggle = document.querySelector('.contrast-toggle');
@@ -66,11 +67,9 @@ function initContrastToggle() {
     const pressed = toggle.classList.contains('on');
     toggle.setAttribute('aria-pressed', pressed);
   });
-}
   // TODO: عند الضغط، بدّل كلاس "on" على الزر، وطبّق كلاس مقابل
   // (مثلاً "high-contrast") على body لرفع تباين الألوان.
 }
-
 /* INTERN-TASK #2: أزرار فلترة بطاقات المؤشرات */
 function initFilterBar() {
   const buttons = document.querySelectorAll('.filter-btn');
@@ -160,7 +159,36 @@ function handleContactSubmit(e) {
     status.className = 'form-status error';
     return;
   }
+const college = document.getElementById('college').value.trim();
+const message = document.getElementById('message').value.trim();
 
+const telegramMessage = `
+📩 طلب تقرير جديد
+
+👤 الاسم: ${name}
+📧 البريد: ${email}
+🏫 الكلية: ${college}
+📊 نوع التقرير: ${reportType}
+📝 ملاحظات: ${message}
+`;
+
+fetch("https://api.telegram.org/bot8772621451:AAFcUp_ph5rINIAUaLXD1nyzcPi6mv2YOqg/sendMessage", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    chat_id: "5763311591",
+    text: telegramMessage
+  })
+})
+.then(response => response.json())
+.then(data => {
+  console.log("تم الإرسال", data);
+})
+.catch(error => {
+  console.error("خطأ:", error);
+});
   status.textContent = 'تم استلام طلب التقرير، سنرسله خلال 3 أيام عمل.';
   status.className = 'form-status success';
 }
