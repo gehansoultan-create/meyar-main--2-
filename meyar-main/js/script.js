@@ -1,3 +1,6 @@
+import { db } from "./firebase.js";
+import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
 /* ============================================================
    معيار — script.js
    ملاحظة للإنترن: ابحث عن تعليقات INTERN-TASK في هذا الملف
@@ -46,7 +49,6 @@ function initNavToggle() {
   });
 
   // INTERN-TASK #6: إغلاق القائمة عند الضغط على الخلفية المعتمة
-  // overlay غير موجود حاليًا — أضف مستمع click هنا يغلق nav و overlay معًا.
   if (overlay) {
     overlay.addEventListener('click', () => {
       nav.classList.remove('open');
@@ -67,9 +69,8 @@ function initContrastToggle() {
     const pressed = toggle.classList.contains('on');
     toggle.setAttribute('aria-pressed', pressed);
   });
-  // TODO: عند الضغط، بدّل كلاس "on" على الزر، وطبّق كلاس مقابل
-  // (مثلاً "high-contrast") على body لرفع تباين الألوان.
 }
+
 /* INTERN-TASK #2: أزرار فلترة بطاقات المؤشرات */
 function initFilterBar() {
   const buttons = document.querySelectorAll('.filter-btn');
@@ -82,13 +83,13 @@ function initFilterBar() {
       btn.classList.add('active');
       const category = btn.dataset.category;
 
-cards.forEach(card => {
-  if (category === 'all' || card.dataset.category === category) {
-    card.style.display = 'block';
-  } else {
-    card.style.display = 'none';
-  }
-});
+      cards.forEach(card => {
+        if (category === 'all' || card.dataset.category === category) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
     });
   });
 }
@@ -98,27 +99,23 @@ function initGauge() {
   const num = document.querySelector('.gauge-num');
   if (!num) return;
   const target = Number(num.dataset.value || 0);
-  // TODO: شغّل عدّاد تصاعدي من 0 إلى target (مثلاً بخطوات كل 20ms)
-  // وحدّث أيضًا stroke-dashoffset على .gauge-fg بما يتناسب مع النسبة.
- let current = 0;
+  
+  let current = 0;
+  const circle = document.querySelector('.gauge-fg');
 
-const circle = document.querySelector('.gauge-fg');
+  const interval = setInterval(() => {
+    current++;
+    num.textContent = current;
 
-const interval = setInterval(() => {
-  current++;
+    if (circle) {
+      const offset = 566 - (566 * current / target);
+      circle.style.strokeDashoffset = offset;
+    }
 
-  num.textContent = current;
-
-  if (circle) {
-    const offset = 566 - (566 * current / target);
-    circle.style.strokeDashoffset = offset;
-  }
-
-  if (current >= target) {
-    clearInterval(interval);
-  }
-
-}, 20);
+    if (current >= target) {
+      clearInterval(interval);
+    }
+  }, 20);
 }
 
 /* نموذج التواصل — نفس فكرة مشروع ميثاق لكن بحقول مختلفة */
@@ -128,10 +125,8 @@ function initContactForm() {
   form.addEventListener('submit', handleContactSubmit);
 }
 
-/* INTERN-TASK #5: تحقق من الحقول قبل اعتبار الإرسال ناجحًا:
-   الاسم مطلوب، البريد يجب أن يطابق صيغة بريد إلكتروني صحيحة،
-   ويجب اختيار "نوع التقرير" فعليًا (وليس الخيار الأول تلقائيًا). */
-function handleContactSubmit(e) {
+/* INTERN-TASK #5: تحقق من الحقول قبل اعتبار الإرسال ناجحًا */
+async function handleContactSubmit(e) {
   e.preventDefault();
 
   const status = document.getElementById('formStatus');
@@ -159,10 +154,11 @@ function handleContactSubmit(e) {
     status.className = 'form-status error';
     return;
   }
-const college = document.getElementById('college').value.trim();
-const message = document.getElementById('message').value.trim();
 
-const telegramMessage = `
+  const college = document.getElementById('college').value.trim();
+  const message = document.getElementById('message').value.trim();
+
+  const telegramMessage = `
 📩 طلب تقرير جديد
 
 👤 الاسم: ${name}
@@ -170,25 +166,40 @@ const telegramMessage = `
 🏫 الكلية: ${college}
 📊 نوع التقرير: ${reportType}
 📝 ملاحظات: ${message}
-`;
+  `.trim();
 
-fetch("https://api.telegram.org/bot8772621451:AAFcUp_ph5rINIAUaLXD1nyzcPi6mv2YOqg/sendMessage", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    chat_id: "5763311591",
-    text: telegramMessage
+  fetch("https://api.telegram.org/bot8772621451:AAFcUp_ph5rINIAUaLXD1nyzcPi6mv2YOqg/sendMessage", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      chat_id: "5763311591",
+      text: telegramMessage
+    })
   })
-})
-.then(response => response.json())
-.then(data => {
-  console.log("تم الإرسال", data);
-})
-.catch(error => {
-  console.error("خطأ:", error);
-});
+  .then(response => response.json())
+  .then(async data => {
+    console.log("تم الإرسال لتليجرام", data);
+    
+    try {
+      await addDoc(collection(db, "contacts"), {
+        name: name,
+        email: email,
+        college: college,
+        reportType: reportType,
+        message: message,
+        timestamp: new Date()
+      });
+      console.log("تم الحفظ في فايربيس بنجاح");
+    } catch (firebaseErr) {
+      console.error("🔥 خطأ فايربيس بالتفصيل:", firebaseErr.code, firebaseErr.message);
+    }
+  })
+  .catch(error => {
+    console.error("خطأ عام:", error);
+  });
+
   status.textContent = 'تم استلام طلب التقرير، سنرسله خلال 3 أيام عمل.';
   status.className = 'form-status success';
 }
